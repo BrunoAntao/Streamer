@@ -1,0 +1,45 @@
+<head>
+
+    <script src='/js/screenshot.js'></script>
+    <script src='/js/test.js'></script>
+
+</head>
+
+<body>
+
+    <script>
+
+        let max = Math.random() * 1000;
+
+        for (let i = 0; i < max; i++) {
+
+            let div = document.createElement('div');
+            div.style.width = '100px';
+            div.style.height = '50px';
+            div.style.backgroundColor = "#" + ((1 << 24) * Math.random() | 0).toString(16);
+
+            document.body.append(div);
+
+        }
+
+        function createElementFromHTML(htmlString) {
+            var div = document.createElement('div');
+            div.innerHTML = htmlString.trim();
+
+            // Change this to div.childNodes to support multiple top-level nodes
+            return div.firstChild;
+        }
+
+        html2canvas(document.body).then(function (canvas) {
+
+            let a = createElementFromHTML('<a href="%dataURI%" download>download</a>');
+
+            a.href = canvas.toDataURL();
+
+            document.body.prepend(a);
+
+        });
+
+    </script>
+
+</body>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Broadcaster</title>
+    <meta charset="UTF-8" />
+</head>
+
+<body>
+    <script>
+
+        let req = new XMLHttpRequest();
+        req.addEventListener('load', () => {
+
+            let streams = JSON.parse(req.response);
+
+            streams.forEach(stream => {
+                
+                let item = document.createElement('a');
+                item.href = '/watch/' + stream;
+                item.innerHTML = stream;
+
+                document.body.append(item);
+
+            });
+
+        })
+        req.open('post', '/streams');
+        req.send();
+
+    </script>
+
+</body>
+
+</html>

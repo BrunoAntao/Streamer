@@ -1,0 +1,93 @@
+<html>
+
+<head></head>
+
+<body>
+
+    <p><button id="start">Start Capture</button></p>
+
+    <div id='videos'></div>
+    <br>
+
+    <strong>Log:</strong>
+    <br>
+    <pre id="log"></pre>
+
+    <script>
+
+        function createElementFromHTML(htmlString) {
+            var div = document.createElement('div');
+            div.innerHTML = htmlString.trim();
+
+            // Change this to div.childNodes to support multiple top-level nodes
+            return div.firstChild;
+        }
+
+        const videos = document.getElementById('videos');
+        const videoElem = createElementFromHTML('<video id="video" width="400" height="400" controls autoplay></video>');
+        const logElem = document.getElementById("log");
+        const startElem = document.getElementById("start");
+
+        var displayMediaOptions = {
+            video: {
+                cursor: "always"
+            },
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate: 44100
+            }
+        }
+
+        function dumpOptionsInfo(video) {
+
+            const videoTrack = video.srcObject.getVideoTracks()[0];
+
+            console.info("Track settings:");
+            console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
+            console.info("Track constraints:");
+            console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
+        }
+
+        async function startCapture() {
+            logElem.innerHTML = "";
+
+            try {
+                let video = videoElem.cloneNode();
+
+                video.addEventListener('pause', (e) => {
+
+                    let tracks = e.target.srcObject.getTracks();
+
+                    tracks.forEach(track => track.stop());
+                    e.target.srcObject = null;
+
+                    e.target.remove();
+
+                })
+
+                video.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+                console.log(video.srcObject.getAudioTracks());
+
+
+                videos.append(video);
+
+                dumpOptionsInfo(video);
+
+            } catch (err) {
+
+                console.error("Error: " + err);
+
+            }
+        }
+
+        startElem.addEventListener("click", function (evt) {
+            startCapture();
+        }, false);
+
+    </script>
+
+</body>
+
+</html>
